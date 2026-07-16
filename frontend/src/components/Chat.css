@@ -1,359 +1,358 @@
-1|/* ===== 梵高 · 杏花 主题 ===== */
-2|* {
-3|  margin: 0;
-4|  padding: 0;
-5|  box-sizing: border-box;
-6|}
-7|
-8|body {
-9|  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-10|  background: #eef4f2;
-11|  color: #2c3e3a;
-12|  height: 100vh;
-13|  overflow: hidden;
-14|}
-15|
-16|#root {
-17|  height: 100vh;
-18|}
-19|
-20|/* ===== 聊天容器 ===== */
-21|.chat-container {
-22|  display: flex;
-23|  height: 100vh;
-24|  background: #eef4f2;
-25|}
-26|
-27|/* ===== 侧边栏 ===== */
-28|.sidebar {
-29|  width: 280px;
-30|  background: #dce8e5;
-31|  display: flex;
-32|  flex-direction: column;
-33|  border-right: 1px solid #c8d9d4;
-34|  transition: width 0.3s, opacity 0.3s;
-35|  flex-shrink: 0;
-36|}
-37|
-38|.sidebar-closed .sidebar {
-39|  width: 0;
-40|  overflow: hidden;
-41|  opacity: 0;
-42|  border: none;
-43|}
-44|
-45|.sidebar-header {
-46|  padding: 20px 16px 12px;
-47|  border-bottom: 1px solid #c8d9d4;
-48|}
-49|
-50|.sidebar-header h2 {
-51|  font-size: 20px;
-52|  font-weight: 700;
-53|  color: #3d5a4b;
-54|  margin-bottom: 12px;
-55|  letter-spacing: 1px;
-56|}
-57|
-58|.new-chat-btn {
-59|  width: 100%;
-60|  padding: 10px;
-61|  border: 1px solid #b8cdc7;
-62|  border-radius: 10px;
-63|  background: rgba(255, 255, 255, 0.5);
-64|  color: #4a6b5a;
-65|  font-size: 14px;
-66|  cursor: pointer;
-67|  transition: all 0.2s;
-68|}
-69|
-70|.new-chat-btn:hover {
-71|  background: rgba(255, 255, 255, 0.85);
-72|  border-color: #a3bfb7;
-73|  color: #2c3e3a;
-74|}
-75|
-76|.conv-list {
-77|  flex: 1;
-78|  overflow-y: auto;
-79|  padding: 8px;
-80|}
-81|
-82|.conv-list::-webkit-scrollbar {
-83|  width: 4px;
-84|}
-85|
-86|.conv-list::-webkit-scrollbar-thumb {
-87|  background: #b8cdc7;
-88|  border-radius: 2px;
-89|}
-90|
-91|.conv-item {
-92|  padding: 12px;
-93|  border-radius: 10px;
-94|  cursor: pointer;
-95|  transition: all 0.2s;
-96|  margin-bottom: 4px;
-97|}
-98|
-99|.conv-item:hover {
-100|  background: rgba(255, 255, 255, 0.4);
-101|}
-102|
-103|.conv-item.active {
-104|  background: rgba(255, 255, 255, 0.7);
-105|  border: 1px solid rgba(180, 200, 180, 0.5);
-106|}
-107|
-108|.conv-title {
-109|  font-size: 14px;
-110|  font-weight: 600;
-111|  margin-bottom: 4px;
-112|  color: #3d5a4b;
-113|}
-114|
-115|.conv-preview {
-116|  font-size: 12px;
-117|  color: #7a9a8a;
-118|  overflow: hidden;
-119|  text-overflow: ellipsis;
-120|  white-space: nowrap;
-121|}
-122|
-123|.sidebar-footer {
-124|  padding: 12px 16px;
-125|  border-top: 1px solid #c8d9d4;
-126|  font-size: 12px;
-127|  color: #8aaa9a;
-128|  text-align: center;
-129|}
-130|
-131|/* ===== 主聊天区 ===== */
-132|.chat-main {
-133|  flex: 1;
-134|  display: flex;
-135|  flex-direction: column;
-136|  min-width: 0;
-137|}
-138|
-139|.chat-header {
-140|  display: flex;
-141|  align-items: center;
-142|  gap: 12px;
-143|  padding: 16px 20px;
-144|  border-bottom: 1px solid #c8d9d4;
-145|  background: rgba(220, 232, 229, 0.7);
-146|  backdrop-filter: blur(10px);
-147|}
-148|
-149|.toggle-sidebar {
-150|  background: none;
-151|  border: none;
-152|  color: #7a9a8a;
-153|  font-size: 16px;
-154|  cursor: pointer;
-155|  padding: 4px 8px;
-156|  border-radius: 6px;
-157|  transition: all 0.2s;
-158|}
-159|
-160|.toggle-sidebar:hover {
-161|  color: #3d5a4b;
-162|  background: rgba(255, 255, 255, 0.4);
-163|}
-164|
-165|.chat-title {
-166|  font-size: 15px;
-167|  font-weight: 600;
-168|  color: #3d5a4b;
-169|}
-170|
-171|/* ===== 消息区域 ===== */
-172|.messages-area {
-173|  flex: 1;
-174|  overflow-y: auto;
-175|  padding: 20px;
-176|  display: flex;
-177|  flex-direction: column;
-178|  gap: 16px;
-179|}
-180|
-181|.messages-area::-webkit-scrollbar {
-182|  width: 6px;
-183|}
-184|
-185|.messages-area::-webkit-scrollbar-thumb {
-186|  background: #b8cdc7;
-187|  border-radius: 3px;
-188|}
-189|
-190|.empty-state {
-191|  flex: 1;
-192|  display: flex;
-193|  flex-direction: column;
-194|  align-items: center;
-195|  justify-content: center;
-196|  color: #8aaa9a;
-197|  gap: 12px;
-198|}
-199|
-200|.empty-icon {
-201|  font-size: 48px;
-202|  opacity: 0.6;
-203|}
-204|
-205|.empty-state p {
-206|  font-size: 15px;
-207|}
-208|
-209|/* ===== 单条消息 ===== */
-210|.message {
-211|  display: flex;
-212|  gap: 12px;
-213|  max-width: 80%;
-214|  animation: fadeIn 0.3s ease;
-215|}
-216|
-217|@keyframes fadeIn {
-218|  from { opacity: 0; transform: translateY(8px); }
-219|  to { opacity: 1; transform: translateY(0); }
-220|}
-221|
-222|.message.user {
-223|  align-self: flex-end;
-224|  flex-direction: row-reverse;
-225|}
-226|
-227|.avatar {
-228|  width: 34px;
-229|  height: 34px;
-230|  border-radius: 50%;
-231|  display: flex;
-232|  align-items: center;
-233|  justify-content: center;
-234|  font-size: 18px;
-235|  flex-shrink: 0;
-236|}
-237|
-238|.message.assistant .avatar {
-239|  background: #c8d9d4;
-240|  color: #3d5a4b;
-241|}
-242|
-243|.message.user .avatar {
-244|  background: #d4a853;
-245|  color: #fff;
-246|}
-247|
-248|.bubble {
-249|  padding: 12px 16px;
-250|  border-radius: 16px;
-251|  line-height: 1.6;
-252|  font-size: 14px;
-253|  word-wrap: break-word;
-254|  white-space: pre-wrap;
-255|}
-256|
-257|.message.assistant .bubble {
-258|  background: #ffffff;
-259|  border: 1px solid #d4e3de;
-260|  border-bottom-left-radius: 4px;
-261|  color: #2c3e3a;
-262|}
-263|
-264|.message.user .bubble {
-265|  background: #f5f0e1;
-266|  border: 1px solid #e8dcc8;
-267|  border-bottom-right-radius: 4px;
-268|  color: #3d4a3e;
-269|}
-270|
-271|.msg-content {
-272|  white-space: pre-wrap;
-273|}
-274|
-275|/* ===== 打字动画 ===== */
-276|.typing {
-277|  display: flex;
-278|  gap: 4px;
-279|  padding: 14px 20px !important;
-280|  align-items: center;
-281|}
-282|
-283|.dot {
-284|  width: 8px;
-285|  height: 8px;
-286|  border-radius: 50%;
-287|  background: #b8cdc7;
-288|  animation: bounce 1.4s infinite;
-289|}
-290|
-291|.dot:nth-child(2) {
-292|  animation-delay: 0.2s;
-293|}
-294|
-295|.dot:nth-child(3) {
-296|  animation-delay: 0.4s;
-297|}
-298|
-299|@keyframes bounce {
-300|  0%, 60%, 100% { transform: translateY(0); }
-301|  30% { transform: translateY(-6px); }
-302|}
-303|
-304|/* ===== 输入区域 ===== */
-305|.input-area {
-306|  display: flex;
-307|  gap: 10px;
-308|  padding: 16px 20px;
-309|  border-top: 1px solid #c8d9d4;
-310|  background: rgba(220, 232, 229, 0.8);
-311|  backdrop-filter: blur(10px);
-312|}
-313|
-314|.input-area textarea {
-315|  flex: 1;
-316|  padding: 12px 16px;
-317|  border: 1px solid #c8d9d4;
-318|  border-radius: 12px;
-319|  background: rgba(255, 255, 255, 0.8);
-320|  color: #2c3e3a;
-321|  font-size: 14px;
-322|  font-family: inherit;
-323|  resize: none;
-324|  outline: none;
-325|  transition: border-color 0.2s;
-326|  max-height: 120px;
-327|}
-328|
-329|.input-area textarea:focus {
-330|  border-color: #d4a853;
-331|}
-332|
-333|.input-area textarea::placeholder {
-334|  color: #8aaa9a;
-335|}
-336|
-337|.send-btn {
-338|  padding: 12px 24px;
-339|  border: none;
-340|  border-radius: 12px;
-341|  background: #d4a853;
-342|  color: #fff;
-343|  font-size: 14px;
-344|  font-weight: 600;
-345|  cursor: pointer;
-346|  transition: all 0.2s;
-347|  white-space: nowrap;
-348|}
-349|
-350|.send-btn:hover:not(:disabled) {
-351|  background: #c4983a;
-352|  transform: translateY(-1px);
-353|}
-354|
-355|.send-btn:disabled {
-356|  opacity: 0.3;
-357|  cursor: not-allowed;
-358|}
-359|
+/* ===== 梵高 · 杏花 主题 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #eef4f2;
+  color: #2c3e3a;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+}
+
+/* ===== 聊天容器 ===== */
+.chat-container {
+  display: flex;
+  height: 100vh;
+  background: #eef4f2;
+}
+
+/* ===== 侧边栏 ===== */
+.sidebar {
+  width: 280px;
+  background: #dce8e5;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #c8d9d4;
+  transition: width 0.3s, opacity 0.3s;
+  flex-shrink: 0;
+}
+
+.sidebar-closed .sidebar {
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  border: none;
+}
+
+.sidebar-header {
+  padding: 20px 16px 12px;
+  border-bottom: 1px solid #c8d9d4;
+}
+
+.sidebar-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3d5a4b;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.new-chat-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #b8cdc7;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  color: #4a6b5a;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.new-chat-btn:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: #a3bfb7;
+  color: #2c3e3a;
+}
+
+.conv-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.conv-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.conv-list::-webkit-scrollbar-thumb {
+  background: #b8cdc7;
+  border-radius: 2px;
+}
+
+.conv-item {
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+}
+
+.conv-item:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.conv-item.active {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(180, 200, 180, 0.5);
+}
+
+.conv-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #3d5a4b;
+}
+
+.conv-preview {
+  font-size: 12px;
+  color: #7a9a8a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #c8d9d4;
+  font-size: 12px;
+  color: #8aaa9a;
+  text-align: center;
+}
+
+/* ===== 主聊天区 ===== */
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #c8d9d4;
+  background: rgba(220, 232, 229, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+.toggle-sidebar {
+  background: none;
+  border: none;
+  color: #7a9a8a;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.toggle-sidebar:hover {
+  color: #3d5a4b;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.chat-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #3d5a4b;
+}
+
+/* ===== 消息区域 ===== */
+.messages-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.messages-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-area::-webkit-scrollbar-thumb {
+  background: #b8cdc7;
+  border-radius: 3px;
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #8aaa9a;
+  gap: 12px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  opacity: 0.6;
+}
+
+.empty-state p {
+  font-size: 15px;
+}
+
+/* ===== 单条消息 ===== */
+.message {
+  display: flex;
+  gap: 12px;
+  max-width: 80%;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.message.assistant .avatar {
+  background: #c8d9d4;
+  color: #3d5a4b;
+}
+
+.message.user .avatar {
+  background: #d4a853;
+  color: #fff;
+}
+
+.bubble {
+  padding: 12px 16px;
+  border-radius: 16px;
+  line-height: 1.6;
+  font-size: 14px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message.assistant .bubble {
+  background: #ffffff;
+  border: 1px solid #d4e3de;
+  border-bottom-left-radius: 4px;
+  color: #2c3e3a;
+}
+
+.message.user .bubble {
+  background: #f5f0e1;
+  border: 1px solid #e8dcc8;
+  border-bottom-right-radius: 4px;
+  color: #3d4a3e;
+}
+
+.msg-content {
+  white-space: pre-wrap;
+}
+
+/* ===== 打字动画 ===== */
+.typing {
+  display: flex;
+  gap: 4px;
+  padding: 14px 20px !important;
+  align-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b8cdc7;
+  animation: bounce 1.4s infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* ===== 输入区域 ===== */
+.input-area {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #c8d9d4;
+  background: rgba(220, 232, 229, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.input-area textarea {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #c8d9d4;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #2c3e3a;
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  max-height: 120px;
+}
+
+.input-area textarea:focus {
+  border-color: #d4a853;
+}
+
+.input-area textarea::placeholder {
+  color: #8aaa9a;
+}
+
+.send-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  background: #d4a853;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.send-btn:hover:not(:disabled) {
+  background: #c4983a;
+  transform: translateY(-1px);
+}
+
+.send-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
