@@ -1,0 +1,18 @@
+{
+  "name": "bunny-elliott-backend",
+  "version": "1.0.0",
+  "description": "Bunny AI 伴侣 - 后端服务",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.6",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0",
+    "openai": "^6.47.0"
+  }
+}
