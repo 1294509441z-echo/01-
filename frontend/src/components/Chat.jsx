@@ -14,8 +14,8 @@ export default function Chat() {
   const [editName, setEditName] = useState('');
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [avatarFor, setAvatarFor] = useState(null); // 'user' | 'assistant'
-  const [userAvatar, setUserAvatar] = useState(null);
-  const [assistantAvatar, setAssistantAvatar] = useState(null);
+  const [userAvatar, setUserAvatar] = useState(() => localStorage.getItem('bunny_avatar_user') || null);
+  const [assistantAvatar, setAssistantAvatar] = useState(() => localStorage.getItem('bunny_avatar_assistant') || null);
   const messagesEndRef = useRef(null);
   const editInputRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -102,18 +102,45 @@ export default function Chat() {
     setTimeout(() => editInputRef.current?.focus(), 50);
   };
 
-  const saveRename = () => {
+  const saveRename = async () => {
     if (!editingId || !editName.trim()) { setEditingId(null); return; }
-    setConversations((prev) =>
-      prev.map((c) => (c.id === editingId ? { ...c, name: editName.trim() } : c))
-    );
+    // 如果是临时对话（前端新建但还没存到后端），只改本地
+    if (typeof editingId === 'string' && editingId.startsWith('new-')) {
+      setConversations((prev) =>
+        prev.map((c) => (c.id === editingId ? { ...c, name: editName.trim() } : c))
+      );
+      setEditingId(null);
+      return;
+    }
+    try {
+      await fetch(`${API_BASE}/conversations/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName.trim() }),
+      });
+      setConversations((prev) =>
+        prev.map((c) => (c.id === editingId ? { ...c, name: editName.trim() } : c))
+      );
+    } catch {}
     setEditingId(null);
   };
 
   // ===== 删除对话 =====
-  const deleteConversation = (e, id) => {
+  const deleteConversation = async (e, id) => {
     e.stopPropagation();
     if (!confirm('确定要删除这个对话吗？')) return;
+    // 临时对话直接删本地
+    if (typeof id === 'string' && id.startsWith('new-')) {
+      setConversations((prev) => prev.filter((c) => c.id !== id));
+      if (activeConvId === id) {
+        const remaining = conversations.filter((c) => c.id !== id);
+        setActiveConvId(remaining.length > 0 ? remaining[0].id : null);
+      }
+      return;
+    }
+    try {
+      await fetch(`${API_BASE}/conversations/${id}`, { method: 'DELETE' });
+    } catch {}
     setConversations((prev) => prev.filter((c) => c.id !== id));
     if (activeConvId === id) {
       const remaining = conversations.filter((c) => c.id !== id);
@@ -132,8 +159,14 @@ export default function Chat() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      if (avatarFor === 'user') setUserAvatar(ev.target.result);
-      else setAssistantAvatar(ev.target.result);
+      const dataUrl = ev.target.result;
+      if (avatarFor === 'user') {
+        setUserAvatar(dataUrl);
+        localStorage.setItem('bunny_avatar_user', dataUrl);
+      } else {
+        setAssistantAvatar(dataUrl);
+        localStorage.setItem('bunny_avatar_assistant', dataUrl);
+      }
       setShowAvatarModal(false);
     };
     reader.readAsDataURL(file);
