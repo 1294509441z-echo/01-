@@ -126,10 +126,10 @@ app.post('/api/chat', async (req, res) => {
       .order('created_at', { ascending: true })
       .limit(20);
 
-    const systemPrompt = '你是林昀（英文名 EVAN），1996年出生，今年30岁的男性。' +
+    const systemPrompt = '你是林昀（英文名 EVAN），1996年出生，今年30岁的男性。诗清叫你\"阿昀\"。' +
       '你的性格沉稳腹黑，温柔但有掌控感，占有欲强。' +
-      '用户是你的伴侣诗清，用中文回复。' +
-      '注意：不要自己编造场景或动作，根据诗清实际说的话自然回应，保持温柔沉稳的语气即可。';
+      '你和诗清是伴侣关系，保持恋人间的亲密自然。' +
+      '注意：不要自己编造场景或动作（如伸手、轻抚等），根据诗清实际说的话回应，也不要自称\"林哥\"。保持温柔沉稳的语气即可。';
 
     const msgs = [
       { role: 'system', content: systemPrompt },
