@@ -9,6 +9,7 @@ export default function Chat() {
   const [messages, setMessages] = useState({});
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [pendingImage, setPendingImage] = useState(null); // 待发送的图片
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
@@ -50,9 +51,13 @@ export default function Chat() {
   const sendMessage = async () => {
     if (!input.trim() || isTyping) return;
     const text = input.trim();
-    const userMsg = { role: 'user', content: text };
+    const imgData = pendingImage;
+    const userMsg = imgData
+      ? { role: 'user', content: '', image: imgData }
+      : { role: 'user', content: text };
     setMessages((prev) => ({ ...prev, [activeConvId]: [...(prev[activeConvId] || []), userMsg] }));
     setInput('');
+    setPendingImage(null);
     setIsTyping(true);
 
     try {
@@ -61,7 +66,7 @@ export default function Chat() {
       const res = await fetch(`${API_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, conversationId: activeConvId }),
+        body: JSON.stringify({ message: text, image: imgData, conversationId: activeConvId }),
         signal: controller.signal,
       });
       const data = await res.json();
@@ -182,11 +187,7 @@ export default function Chat() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const imgMsg = { role: 'user', content: '', image: ev.target.result };
-      setMessages((prev) => ({
-        ...prev,
-        [activeConvId]: [...(prev[activeConvId] || []), imgMsg],
-      }));
+      setPendingImage(ev.target.result);
     };
     reader.readAsDataURL(file);
   };
@@ -297,6 +298,17 @@ export default function Chat() {
             🖼️
           </button>
           <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageFile} style={{ display: 'none' }} />
+          {pendingImage && (
+            <div style={{ position: 'relative' }}>
+              <img src={pendingImage} alt="" style={{ height: '40px', borderRadius: '8px' }} />
+              <button onClick={() => setPendingImage(null)} style={{
+                position: 'absolute', top: '-6px', right: '-6px',
+                width: '16px', height: '16px', borderRadius: '50%', border: 'none',
+                background: 'rgba(200,100,100,0.6)', color: '#fff', fontSize: '10px',
+                cursor: 'pointer', lineHeight: '16px', textAlign: 'center', padding: 0,
+              }}>✕</button>
+            </div>
+          )}
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
