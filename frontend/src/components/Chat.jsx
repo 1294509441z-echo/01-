@@ -39,7 +39,16 @@ export default function Chat() {
     if (!activeConvId || messages[activeConvId]) return;
     fetch(`${API_BASE}/conversations/${activeConvId}/messages`)
       .then((r) => r.json())
-      .then((data) => setMessages((prev) => ({ ...prev, [activeConvId]: data })))
+      .then((data) => {
+        // 解析图片：检测 ![]() 格式
+        const parsed = data.map((m) => {
+          const imgMatch = m.content?.match(/^!\[.*\]\((.*)\)$/);
+          return imgMatch
+            ? { ...m, content: '', image: imgMatch[1] }
+            : m;
+        });
+        setMessages((prev) => ({ ...prev, [activeConvId]: parsed }));
+      })
       .catch(() => {});
   }, [activeConvId, messages]);
 
@@ -81,7 +90,7 @@ export default function Chat() {
         ]);
         setMessages((prev) => ({
           ...prev,
-          [data.sessionId]: [...userMsgOnly, { role: 'assistant', content: data.content }],
+          [data.sessionId]: [...userMsgOnly, { role: 'assistant', content: data.content, image: data.image }],
         }));
         setIsTyping(false);
         return;
@@ -89,7 +98,7 @@ export default function Chat() {
 
       setMessages((prev) => ({
         ...prev,
-        [activeConvId]: [...(prev[activeConvId] || []), { role: 'assistant', content: data.content }],
+        [activeConvId]: [...(prev[activeConvId] || []), { role: 'assistant', content: data.content, image: data.image }],
       }));
     } catch {
       setMessages((prev) => ({
