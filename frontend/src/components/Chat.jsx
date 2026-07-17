@@ -207,7 +207,7 @@ export default function Chat() {
     <div className={`chat-container ${sidebarOpen ? '' : 'sidebar-closed'}`}>
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h2>Bunny 🌸</h2>
+          <h2></h2>
           <button className="new-chat-btn" onClick={newConversation}>✦ 新对话</button>
         </div>
         <div className="conv-list">
@@ -241,7 +241,7 @@ export default function Chat() {
             </div>
           ))}
         </div>
-        <div className="sidebar-footer">❤️ 诗清的 Bunny</div>
+        <div className="sidebar-footer"></div>
       </aside>
 
       <main className="chat-main">
@@ -249,16 +249,13 @@ export default function Chat() {
           <button className="toggle-sidebar" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? '◀' : '▶'}
           </button>
-          <span className="chat-title">
-            对话中
-          </span>
         </header>
 
         <div className="messages-area">
           {activeMessages.length === 0 && !isTyping && (
             <div className="empty-state">
               <div className="empty-icon">💬</div>
-              <p>给 Bunny 发一条消息吧！</p>
+              <p>开始聊天吧</p>
             </div>
           )}
           {activeMessages.map((msg, i) => (
@@ -304,7 +301,7 @@ export default function Chat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="给 Bunny 发消息..."
+            placeholder="发消息..."
             rows={1}
           />
           <button className="send-btn" onClick={sendMessage} disabled={!input.trim() || isTyping}>发送</button>

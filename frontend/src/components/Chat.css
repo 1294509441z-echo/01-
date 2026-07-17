@@ -58,16 +58,13 @@ body {
 }
 
 .sidebar-header {
-  padding: 20px 16px 12px;
+  padding: 16px 16px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .sidebar-header h2 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #3d5a4b;
-  margin-bottom: 12px;
-  letter-spacing: 1px;
+  font-size: 0;
+  margin: 0;
 }
 
 .new-chat-btn {
