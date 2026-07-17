@@ -182,7 +182,7 @@ export default function Chat() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const imgMsg = { role: 'user', content: '[图片]', image: ev.target.result };
+      const imgMsg = { role: 'user', content: '', image: ev.target.result };
       setMessages((prev) => ({
         ...prev,
         [activeConvId]: [...(prev[activeConvId] || []), imgMsg],
