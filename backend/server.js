@@ -78,10 +78,10 @@ app.delete('/api/conversations/:id', async (req, res) => {
   res.json({ success: true });
 });
 
-// 发送消息（调用 DeepSeek AI 回复）
+// 发送消息（支持文字 + 图片）
 app.post('/api/chat', async (req, res) => {
-  const { message, conversationId } = req.body;
-  if (!message) return res.status(400).json({ error: '消息不能为空' });
+  const { message, conversationId, image } = req.body;
+  if (!message && !image) return res.status(400).json({ error: '消息不能为空' });
 
   try {
     // 1. 创建或获取对话
@@ -97,7 +97,7 @@ app.post('/api/chat', async (req, res) => {
 
     // 2. 保存用户消息
     await supabase.from('messages').insert({
-      session_id: sessionId, role: 'user', content: message,
+      session_id: sessionId, role: 'user', content: message || '[图片]',
     });
 
     // 3. 获取历史消息作为上下文
@@ -108,14 +108,19 @@ app.post('/api/chat', async (req, res) => {
       .order('created_at', { ascending: true })
       .limit(20);
 
-    // 4. 调用 DeepSeek API
+    // 4. 构建消息（支持多模态图片）
     const systemPrompt = '你是 Bunny，一个温柔、可爱的 AI 伴侣。用中文回复，语气亲切温暖，像朋友一样聊天。';
+
+    // 构建用户消息内容
+    const userContent = [];
+    if (message) userContent.push({ type: 'text', text: message });
+    if (image) userContent.push({ type: 'image_url', image_url: { url: image } });
 
     const messages = [
       { role: 'system', content: systemPrompt },
       ...history.map(m => ({ role: m.role, content: m.content })),
+      { role: 'user', content: userContent },
     ];
-
     const completion = await deepseek.chat.completions.create({
       model: 'deepseek-chat',
       messages,
