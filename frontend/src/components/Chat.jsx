@@ -103,7 +103,7 @@ export default function Chat() {
     } catch {
       setMessages((prev) => ({
         ...prev,
-        [activeConvId]: [...(prev[activeConvId] || []), { role: 'assistant', content: 'Bunny 还在睡觉呢～再试一次吧 🐰💤' }],
+        [activeConvId]: [...(prev[activeConvId] || []), { role: 'assistant', content: '林昀还在呢～再叫我一次？' }],
       }));
     }
     setIsTyping(false);
