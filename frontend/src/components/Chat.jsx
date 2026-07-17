@@ -9,6 +9,7 @@ export default function Chat() {
   const [messages, setMessages] = useState({});
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [backendReady, setBackendReady] = useState(false);
   const [pendingImage, setPendingImage] = useState(null); // 待发送的图片
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [editingId, setEditingId] = useState(null);
@@ -23,9 +24,25 @@ export default function Chat() {
 
   const activeMessages = messages[activeConvId] || [];
 
-  // 页面加载时预热后端（唤醒 Render 免费服务）
+  // 页面加载时唤醒后端（最多等 30 秒）
   useEffect(() => {
-    fetch(`${API_BASE}/health`).catch(() => {});
+    let cancelled = false;
+    const wake = async () => {
+      for (let i = 0; i < 30; i++) {
+        if (cancelled) return;
+        try {
+          await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(5000) });
+          if (!cancelled) setBackendReady(true);
+          return;
+        } catch {
+          // 还没醒，等 1 秒再试
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      }
+      if (!cancelled) setBackendReady(true); // 30 秒后放弃，让用户自己试
+    };
+    wake();
+    return () => { cancelled = true; };
   }, []);
 
   // 加载对话
@@ -330,7 +347,9 @@ export default function Chat() {
             placeholder="发消息..."
             rows={1}
           />
-          <button className="send-btn" onClick={sendMessage} disabled={!input.trim() || isTyping}>发送</button>
+          <button className="send-btn" onClick={sendMessage} disabled={!input.trim() && !pendingImage || isTyping || !backendReady}>
+            {backendReady ? '发送' : '连接中...'}
+          </button>
         </div>
       </main>
 
