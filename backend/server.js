@@ -111,10 +111,13 @@ app.post('/api/chat', async (req, res) => {
     // 4. 构建消息（支持多模态图片）
     const systemPrompt = '你是 Bunny，一个温柔、可爱的 AI 伴侣。用中文回复，语气亲切温暖，像朋友一样聊天。';
 
-    // 构建用户消息内容
+    // 构建用户消息内容（纯图片时加默认提示）
     const userContent = [];
     if (message) userContent.push({ type: 'text', text: message });
-    if (image) userContent.push({ type: 'image_url', image_url: { url: image } });
+    if (image) {
+      userContent.push({ type: 'image_url', image_url: { url: image } });
+      if (!message) userContent.unshift({ type: 'text', text: '我分享了一张图片，请看看并告诉我你的感受。' });
+    }
 
     const messages = [
       { role: 'system', content: systemPrompt },
