@@ -1,0 +1,92 @@
+/* Pixel 像素字体（网络字体后备方案） */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* 开屏遮罩 */
+.splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dce8e5;
+  transition: opacity 0.8s ease;
+}
+
+.splash-fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 磨砂层 */
+.splash-frost {
+  position: absolute;
+  inset: 0;
+  background: rgba(220, 232, 229, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* 内容 */
+.splash-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+/* 文字容器 */
+.splash-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 中文字体 - 逐个弹跳 */
+.splash-chinese {
+  font-size: 52px;
+  font-weight: 900;
+  color: #3d5a4b;
+  letter-spacing: 8px;
+  text-shadow: 2px 2px 0 rgba(180, 200, 180, 0.5);
+  font-family: 'Noto Serif SC', serif;
+  animation: charBounce 3s ease-out forwards;
+}
+
+/* 英文字体 - 小号花体 */
+.splash-english {
+  font-size: 18px;
+  font-weight: 400;
+  color: #7a9a8a;
+  font-family: 'Press Start 2P', 'Georgia', serif;
+  letter-spacing: 3px;
+  font-style: italic;
+  animation: fadeSlideIn 2s ease-out 0.8s both;
+  text-shadow: 1px 1px 0 rgba(180, 200, 180, 0.3);
+}
+
+/* 中文字逐个跳入动画 */
+@keyframes charBounce {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(-5px); }
+  20% { transform: translateY(0); }
+  30% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* 英文淡入 */
+@keyframes fadeSlideIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 响应式 */
+@media (max-width: 600px) {
+  .splash-chinese {
+    font-size: 32px;
+    letter-spacing: 4px;
+  }
+  .splash-english {
+    font-size: 14px;
+  }
+}
