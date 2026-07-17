@@ -51,6 +51,33 @@ app.get('/api/conversations/:id/messages', async (req, res) => {
   res.json(data);
 });
 
+// 重命名对话
+app.put('/api/conversations/:id', async (req, res) => {
+  const { name } = req.body;
+  if (!name) return res.status(400).json({ error: '名称不能为空' });
+
+  const { data, error } = await supabase
+    .from('sessions')
+    .update({ name, updated_at: new Date().toISOString() })
+    .eq('id', req.params.id)
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// 删除对话
+app.delete('/api/conversations/:id', async (req, res) => {
+  const { error } = await supabase
+    .from('sessions')
+    .delete()
+    .eq('id', req.params.id);
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
+});
+
 // 发送消息（调用 DeepSeek AI 回复）
 app.post('/api/chat', async (req, res) => {
   const { message, conversationId } = req.body;
