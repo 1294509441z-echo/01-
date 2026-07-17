@@ -49,7 +49,7 @@ export default function Chat() {
 
   // ===== 发送消息 =====
   const sendMessage = async () => {
-    if (!input.trim() || isTyping) return;
+    if ((!input.trim() && !pendingImage) || isTyping) return;
     const text = input.trim();
     const imgData = pendingImage;
     const userMsg = imgData
