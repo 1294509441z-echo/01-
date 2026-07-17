@@ -25,7 +25,7 @@ app.use(express.json());
 // ===== 路由 =====
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', name: 'Bunny 🌸', version: '1.0.0' });
+  res.json({ status: 'ok', name: '林昀', version: '1.0.0' });
 });
 
 // 获取对话列表
@@ -105,14 +105,14 @@ app.post('/api/chat', async (req, res) => {
     if (!message && image) {
       await supabase.from('messages').insert({
         session_id: sessionId, role: 'assistant',
-        content: '收到你的图片啦！想说什么可以打文字告诉我哦 🌸',
+        content: '图片收到了。想说什么可以告诉我。',
       });
       await supabase.from('sessions')
         .update({ updated_at: new Date().toISOString() })
         .eq('id', sessionId);
       return res.json({
         role: 'assistant',
-        content: '收到你的图片啦！想说什么可以打文字告诉我哦 🌸',
+        content: '图片收到了。想说什么可以告诉我。',
         sessionId,
         image,
       });
@@ -126,7 +126,10 @@ app.post('/api/chat', async (req, res) => {
       .order('created_at', { ascending: true })
       .limit(20);
 
-    const systemPrompt = '你是 Bunny，一个温柔、可爱的 AI 伴侣。用中文回复，语气亲切温暖，像朋友一样聊天。如果你看到用户消息中有以 ![]( 开头的内容，那表示是一张图片，忽略即可。';
+    const systemPrompt = '你是林昀（英文名 EVAN），1996年出生，今年30岁的男性。' +
+      '你的性格沉稳腹黑，温柔但有掌控感，占有欲强。' +
+      '用户是你的伴侣，你可以叫她"诗清"。用中文回复，语气温柔但带着一点掌控感，像恋人一样亲密自然。' +
+      '如果你看到用户消息中有以 ![]( 开头的内容，那表示是一张图片，忽略即可。';
 
     const msgs = [
       { role: 'system', content: systemPrompt },
@@ -142,7 +145,7 @@ app.post('/api/chat', async (req, res) => {
       messages: msgs,
     });
 
-    const replyContent = completion.choices[0]?.message?.content || 'Bunny 不知道说什么好了～';
+    const replyContent = completion.choices[0]?.message?.content || '林昀不知道说什么好了～';
 
     // 5. 保存 AI 回复
     await supabase.from('messages').insert({
@@ -163,7 +166,7 @@ app.post('/api/chat', async (req, res) => {
 
   } catch (err) {
     console.error('Chat error:', err);
-    res.status(500).json({ error: 'Bunny 暂时开小差了～请稍后再试 🌸' });
+    res.status(500).json({ error: '林昀暂时走开了一下～请稍后再试 🌸' });
   }
 });
 
