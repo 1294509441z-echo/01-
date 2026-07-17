@@ -95,12 +95,30 @@ app.post('/api/chat', async (req, res) => {
       sessionId = newSession.id;
     }
 
-    // 2. 保存用户消息
+    // 2. 保存用户消息（带图片数据）
+    const userContent = image ? `![](${image})` : message;
     await supabase.from('messages').insert({
-      session_id: sessionId, role: 'user', content: message || '[图片]',
+      session_id: sessionId, role: 'user', content: userContent,
     });
 
-    // 3. 获取历史消息作为上下文
+    // 3. 如果是纯图片（无文字），直接回复确认
+    if (!message && image) {
+      await supabase.from('messages').insert({
+        session_id: sessionId, role: 'assistant',
+        content: '收到你的图片啦！想说什么可以打文字告诉我哦 🌸',
+      });
+      await supabase.from('sessions')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', sessionId);
+      return res.json({
+        role: 'assistant',
+        content: '收到你的图片啦！想说什么可以打文字告诉我哦 🌸',
+        sessionId,
+        image,
+      });
+    }
+
+    // 4. 有文字时：调 DeepSeek（只发文字）
     const { data: history } = await supabase
       .from('messages')
       .select('role, content')
@@ -108,25 +126,20 @@ app.post('/api/chat', async (req, res) => {
       .order('created_at', { ascending: true })
       .limit(20);
 
-    // 4. 构建消息（支持多模态图片）
-    const systemPrompt = '你是 Bunny，一个温柔、可爱的 AI 伴侣。用中文回复，语气亲切温暖，像朋友一样聊天。';
+    const systemPrompt = '你是 Bunny，一个温柔、可爱的 AI 伴侣。用中文回复，语气亲切温暖，像朋友一样聊天。如果你看到用户消息中有以 ![]( 开头的内容，那表示是一张图片，忽略即可。';
 
-    // 构建用户消息内容（纯图片时加默认提示）
-    const userContent = [];
-    if (message) userContent.push({ type: 'text', text: message });
-    if (image) {
-      userContent.push({ type: 'image_url', image_url: { url: image } });
-      if (!message) userContent.unshift({ type: 'text', text: '我分享了一张图片，请看看并告诉我你的感受。' });
-    }
-
-    const messages = [
+    const msgs = [
       { role: 'system', content: systemPrompt },
-      ...history.map(m => ({ role: m.role, content: m.content })),
-      { role: 'user', content: userContent },
+      ...history.map(m => ({
+        role: m.role,
+        content: m.content.startsWith('![](') ? '[图片]' : m.content,
+      })),
+      { role: 'user', content: image ? (message || '') : message },
     ];
+
     const completion = await deepseek.chat.completions.create({
       model: 'deepseek-chat',
-      messages,
+      messages: msgs,
     });
 
     const replyContent = completion.choices[0]?.message?.content || 'Bunny 不知道说什么好了～';
@@ -145,6 +158,7 @@ app.post('/api/chat', async (req, res) => {
       role: 'assistant',
       content: replyContent,
       sessionId,
+      image,
     });
 
   } catch (err) {
