@@ -23,6 +23,11 @@ export default function Chat() {
 
   const activeMessages = messages[activeConvId] || [];
 
+  // 页面加载时预热后端（唤醒 Render 免费服务）
+  useEffect(() => {
+    fetch(`${API_BASE}/health`).catch(() => {});
+  }, []);
+
   // 加载对话
   useEffect(() => {
     fetch(`${API_BASE}/conversations`)
